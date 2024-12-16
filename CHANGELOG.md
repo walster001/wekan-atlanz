@@ -15,6 +15,22 @@ Fixing other platforms In Progress.
 
 [How to upgrade WeKan](https://github.com/wekan/wekan/issues/4585)
 
+# Upcoming WeKan ® release
+
+This release adds the following updates:
+
+- [Changed the default maximum list width](https://github.com/wekan/wekan/pull/5614).
+  Thanks to NadavTasher.
+
+and fixes the following bugs:
+
+- [Fix buggy behaviours in board dragscrolling](https://github.com/wekan/wekan/pull/5618).
+  Thanks to NadavTasher.
+- [Revert back to have shortcut "c to archive" back for non-Persian keyboards](https://github.com/wekan/wekan/commit/ba0fdaef72393632ca80b42a3c5d2ee5f5e0c76e).
+  Thanks to hatl and xet7.
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
 # v7.72 2024-12-08 WeKan ® release
 
 This release adds the following new features:
