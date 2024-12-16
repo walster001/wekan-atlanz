@@ -324,8 +324,22 @@ Meteor.methods({
         check(info, Object); // Validate the info parameter
         check(userId, String); // Validate the userId parameter
 
-        // Placeholder for board-specific tasks or logic
-        // You can add custom functionality here to handle board data
+        const defaultBoardParams = (process.env.DEFAULT_BOARD_ID || '').split(':');
+        const defaultBoardId = defaultBoardParams.shift()
+        if (!defaultBoardId) return
+
+       const board = Boards.findOne(defaultBoardId)
+       const userId = Users.findOne({ 'services.oidc.id': oidcUserId })?._id
+       const memberIndex = _.pluck(board?.members, 'userId').indexOf(userId);
+       if(!board || !userId || memberIndex > -1) return
+
+    board.addMember(userId)
+    board.setMemberPermission(
+      userId,
+      defaultBoardParams.contains("isAdmin"),
+      defaultBoardParams.contains("isNoComments"),
+      defaultBoardParams.contains("isCommentsOnly"),
+      defaultBoardParams.contains("isWorker")
         console.log("Board routine executed for user ID:", userId);
     }
 });
