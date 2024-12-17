@@ -115,11 +115,15 @@ OAuth.registerService('oidc', 2, null, async function (query) {
 
     if (debug) console.log('XXX: serviceData.email:', serviceData.email);
 
-    // Check email against the database
-    const emailExists = await emailExistsInDatabase(serviceData.email);
-    if (!emailExists) {
-        throw new Error('Email validation failed: Email not found in the database.');
-    }
+    // **Check email against the database if toggled ON**
+    if (process.env.ENABLE_ASYNC_EMAIL_CHECK === 'true') {
+        const emailExists = await emailExistsInDatabase(serviceData.email);
+        if (!emailExists) {
+            throw new Error('Email validation failed: Email not found in the database.');
+        }
+    } else if (debug) {
+        console.log('XXX: Skipping async email check due to environment variable configuration.');
+   }
 
     // If additional fields are whitelisted in the configuration, extend serviceData with them
     if (accessToken) {
