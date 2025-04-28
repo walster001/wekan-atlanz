@@ -610,6 +610,12 @@ export default {
     name: "தமிழ்",
     load: () => import('./data/ta.i18n.json'),
   },
+  "te-IN": {
+    code: "te",
+    tag: "te_IN",
+    name: "తెలుగు (భారతదేశం)",
+    load: () => import('./data/te-IN.i18n.json'),
+  },
   "th": {
     code: "th",
     tag: "th",

@@ -6,6 +6,7 @@ Please read the meteor style guide before making any significant contribution.
 
 # Stories about how Wekan works, and developing Wekan
 
+- [Login code](https://github.com/wekan/wekan/issues/5714)
 - https://www.mongodb.com/docs/drivers/node/v3.7/fundamentals/promises/
 - [Do not use code formatters like Prettier and ESLint](https://github.com/wekan/wekan/pull/4633#issuecomment-1214214591)
 - [How realtime board updates work](https://github.com/wekan/wekan/issues/3788#issuecomment-834649553)
@@ -46,7 +47,7 @@ When you run this, you see .jade template files where is search input box, and .
   - Look through old [pull requests](https://github.com/wekan/wekan/pulls)
   - Read Wekan source code, you can use some git history viewer GUI like gitk
   - Read [Meteor documentation](https://docs.meteor.com/) for [Meteor version](https://github.com/wekan/wekan/blob/main/.meteor/release) in use, other versions mentioned at [Dockerfile](https://github.com/wekan/wekan/blob/main/Dockerfile)
-- Docker up-to-date way: You can  clone wekan/wekan repo and update docker-compose.yml file ROOT_URL etc as documented at https://github.com/wekan/wekan-mongodb commented docker-compose.yml file, install docker, and build from source with docker with "docker-compose up -d --build"
+- Docker up-to-date way: You can  clone wekan/wekan repo and update docker-compose.yml file ROOT_URL etc as documented at https://github.com/wekan/wekan commented `docker-compose.yml` file, install docker, and build from source with docker with `docker compose up -d --build`
 - Docker not up-to-date way: [Docker environment for Wekan development](https://github.com/wekan/wekan-dev). 
 
 ## Pull Request Workflow (Please read before submitting PR's)

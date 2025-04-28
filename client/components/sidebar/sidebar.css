@@ -104,9 +104,13 @@
 }
 .sidebar .sidebar-shortcuts {
   top: 7px;
-  font-size: 0.8em;
+  font-size: 1em;
   line-height: 1.6em;
   color: #999;
+}
+.sidebar .sidebar-shortcuts .sidebar-btn {
+  margin-left: 3px;
+  margin-right: 3px;
 }
 .board-sidebar {
   display: none;
@@ -173,7 +177,7 @@
 @media screen and (max-width: 800px) {
   .board-sidebar {
     width: 100%;
-    right: -100%;
+    left: 0;
   }
   .board-sidebar .sidebar-content .hide-btn {
     width: 40px;

@@ -39,12 +39,6 @@ BlazeComponent.extendComponent({
     return user && user.hasStarred(boardId);
   },
 
-  isAutoWidth() {
-    const boardId = Utils.getCurrentBoardId();
-    const user = ReactiveCache.getCurrentUser();
-    return user && user.isAutoWidth(boardId);
-  },
-
   // Only show the star counter if the number of star is greater than 2
   showStarCounter() {
     const currentBoard = Utils.getCurrentBoard();
@@ -77,10 +71,6 @@ BlazeComponent.extendComponent({
         'click .js-edit-board-title': Popup.open('boardChangeTitle'),
         'click .js-star-board'() {
           ReactiveCache.getCurrentUser().toggleBoardStar(Session.get('currentBoard'));
-        },
-        'click .js-auto-width-board'() {
-          dragscroll.reset();
-          ReactiveCache.getCurrentUser().toggleAutoWidth(Utils.getCurrentBoardId());
         },
         'click .js-open-board-menu': Popup.open('boardMenu'),
         'click .js-change-visibility': Popup.open('boardChangeVisibility'),

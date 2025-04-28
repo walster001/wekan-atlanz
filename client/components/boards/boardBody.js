@@ -248,6 +248,10 @@ BlazeComponent.extendComponent({
     }
   },
 
+  hasSwimlanes() {
+    return Utils.getCurrentBoard().swimlanes().length > 0;
+  },
+
   isViewLists() {
     const currentUser = ReactiveCache.getCurrentUser();
     if (currentUser) {
@@ -264,6 +268,11 @@ BlazeComponent.extendComponent({
     } else {
       return window.localStorage.getItem('boardView') === 'board-view-cal';
     }
+  },
+
+  isVerticalScrollbars() {
+    const user = ReactiveCache.getCurrentUser();
+    return user && user.isVerticalScrollbars();
   },
 
   openNewListForm() {
@@ -288,6 +297,7 @@ BlazeComponent.extendComponent({
             this._isDragging = false;
           }
         },
+        'click .js-empty-board-add-swimlane': Popup.open('swimlaneAdd'),
       },
     ];
   },

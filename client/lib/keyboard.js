@@ -11,8 +11,37 @@ window.addEventListener('keydown', (e) => {
   if (String.fromCharCode(e.which).toLowerCase() === e.key) return;
 
   // Trigger the corresponding action
-  Mousetrap.trigger(String.fromCharCode(e.which).toLowerCase());
+  Mousetrap.handleKey(String.fromCharCode(e.which).toLowerCase(), [], {type: "keypress"});
 });
+
+// Overwrite the stopCallback to allow for more keyboard shortcut customizations
+Mousetrap.stopCallback = (event, element) => {
+  // Are shortcuts enabled for the user?
+  if (ReactiveCache.getCurrentUser() && !ReactiveCache.getCurrentUser().isKeyboardShortcuts())
+    return true;
+
+  // Always handle escape
+  if (event.keyCode === 27)
+    return false;
+
+  // Make sure there are no selected characters
+  if (window.getSelection().type === "Range")
+    return true;
+
+  // Decide what the current element is
+  const currentElement = event.target || document.activeElement;
+
+  // If the current element is editable, we don't want to trigger an event
+  if (currentElement.isContentEditable)
+    return true;
+
+  // Make sure we are not in an input element
+  if (currentElement instanceof HTMLInputElement || currentElement instanceof HTMLSelectElement || currentElement instanceof HTMLTextAreaElement)
+    return true;
+
+  // We can trigger events!
+  return false;
+}
 
 function getHoveredCardId() {
   const card = $('.js-minicard:hover').get(0);
@@ -104,7 +133,7 @@ Mousetrap.bind(numbArray, (evt, key) => {
     const cardIds = MultiSelection.getSelectedCardIds();
     for (const cardId of cardIds)
     {
-      card = ReactiveCache.getCard(cardId);
+      card = Cards.findOne(cardId);
       if(num <= board.labels.length)
       {
         card.removeLabel(labels[num-1]["_id"]);
@@ -128,7 +157,7 @@ Mousetrap.bind(numArray, (evt, key) => {
     const cardIds = MultiSelection.getSelectedCardIds();
     for (const cardId of cardIds)
     {
-      card = ReactiveCache.getCard(cardId);
+      card = Cards.findOne(cardId);
       if(num <= board.labels.length)
       {
         card.addLabel(labels[num-1]["_id"]);
@@ -142,11 +171,42 @@ Mousetrap.bind(numArray, (evt, key) => {
     return;
   }
   if (ReactiveCache.getCurrentUser().isBoardMember()) {
-    const card = ReactiveCache.getCard(cardId);
+    const card = Cards.findOne(cardId);
     if(num <= board.labels.length)
     {
       card.toggleLabel(labels[num-1]["_id"]);
     }
+  }
+});
+
+Mousetrap.bind(_.range(1, 10).map(x => `ctrl+alt+${x}`), (evt, key) => {
+  // Make sure the current user is defined
+  if (!ReactiveCache.getCurrentUser())
+    return;
+
+  // Make sure the current user is a board member
+  if (!ReactiveCache.getCurrentUser().isBoardMember())
+    return;
+
+  const memberIndex = parseInt(key.split("+").pop()) - 1;
+  const currentBoard = Utils.getCurrentBoard();
+  const validBoardMembers = currentBoard.memberUsers().filter(member => member.isBoardMember());
+
+  if (memberIndex >= validBoardMembers.length)
+    return;
+
+  const memberId = validBoardMembers[memberIndex]._id;
+
+  if (MultiSelection.isActive()) {
+    for (const cardId of MultiSelection.getSelectedCardIds())
+      Cards.findOne(cardId).toggleAssignee(memberId);
+  } else {
+    const cardId = getSelectedCardId();
+
+    if (!cardId)
+      return;
+
+    Cards.findOne(cardId).toggleAssignee(memberId);
   }
 });
 
@@ -162,7 +222,7 @@ Mousetrap.bind('m', evt => {
   }
 
   if (ReactiveCache.getCurrentUser().isBoardMember()) {
-    const card = ReactiveCache.getCard(cardId);
+    const card = Cards.findOne(cardId);
     card.toggleAssignee(currentUserId);
     // We should prevent scrolling in card when spacebar is clicked
     // This should do it according to Mousetrap docs, but it doesn't
@@ -182,7 +242,7 @@ Mousetrap.bind('space', evt => {
   }
 
   if (ReactiveCache.getCurrentUser().isBoardMember()) {
-    const card = ReactiveCache.getCard(cardId);
+    const card = Cards.findOne(cardId);
     card.toggleMember(currentUserId);
     // We should prevent scrolling in card when spacebar is clicked
     // This should do it according to Mousetrap docs, but it doesn't
@@ -190,7 +250,7 @@ Mousetrap.bind('space', evt => {
   }
 });
 
-Mousetrap.bind('c', evt => {
+const archiveCard = evt => {
   const cardId = getSelectedCardId();
   if (!cardId) {
     return;
@@ -202,35 +262,21 @@ Mousetrap.bind('c', evt => {
   }
 
   if (Utils.canModifyBoard()) {
-    const card = ReactiveCache.getCard(cardId);
+    const card = Cards.findOne(cardId);
     card.archive();
     // We should prevent scrolling in card when spacebar is clicked
     // This should do it according to Mousetrap docs, but it doesn't
     evt.preventDefault();
   }
-});
+};
+
+// Archive card has multiple shortcuts
+Mousetrap.bind('c', archiveCard);
+Mousetrap.bind('-', archiveCard);
 
 // Same as above, this time for Persian keyboard.
 // https://github.com/wekan/wekan/pull/5589#issuecomment-2516776519
-Mousetrap.bind('÷', evt => {
-  const cardId = getSelectedCardId();
-  if (!cardId) {
-    return;
-  }
-
-  const currentUserId = Meteor.userId();
-  if (currentUserId === null) {
-    return;
-  }
-
-  if (Utils.canModifyBoard()) {
-    const card = ReactiveCache.getCard(cardId);
-    card.archive();
-    // We should prevent scrolling in card when spacebar is clicked
-    // This should do it according to Mousetrap docs, but it doesn't
-    evt.preventDefault();
-  }
-});
+Mousetrap.bind('÷', archiveCard);
 
 Mousetrap.bind('n', evt => {
   const cardId = getSelectedCardId();
@@ -245,7 +291,7 @@ Mousetrap.bind('n', evt => {
 
   if (Utils.canModifyBoard()) {
     // Find the current hovered card
-    const card = ReactiveCache.getCard(cardId);
+    const card = Cards.findOne(cardId);
 
     // Find the button and click it
     $(`#js-list-${card.listId} .list-body .minicards .open-minicard-composer`).click();
@@ -303,11 +349,11 @@ Template.keyboardShortcuts.helpers({
       action: 'shortcut-add-self',
     },
     {
-      keys: ['n'],
+      keys: ['m'],
       action: 'shortcut-assign-self',
     },
     {
-      keys: ['c', '÷'],
+      keys: ['c', '÷', '-'],
       action: 'archive-card',
     },
     {
@@ -317,6 +363,10 @@ Template.keyboardShortcuts.helpers({
     {
       keys: ['shift + number keys 1-9'],
       action: 'remove-labels-multiselect'
+    },
+    {
+      keys: ['ctrl + alt + number keys 1-9'],
+      action: 'toggle-assignees'
     },
   ],
 });

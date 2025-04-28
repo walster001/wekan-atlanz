@@ -1,14 +1,17 @@
 template(name="sidebar")
-  .board-sidebar.sidebar(class="{{#if isOpen}}is-open{{/if}}")
+  .board-sidebar.sidebar(class="{{#if isOpen}}is-open{{/if}} {{#unless isVerticalScrollbars}}no-scrollbars{{/unless}}")
     //a.sidebar-tongue.js-toggle-sidebar(
     //  class="{{#if isTongueHidden}}is-hidden{{/if}}",
     //  title="{{showTongueTitle}}")
     //  i.fa.fa-navicon
     .sidebar-actions
       .sidebar-shortcuts
-        a.board-header-btn.js-shortcuts(title="{{_ 'keyboard-shortcuts' }}")
+        a.sidebar-btn.js-shortcuts(title="{{_ 'keyboard-shortcuts' }}")
           i.fa.fa-keyboard-o
           span {{_ 'keyboard-shortcuts' }}
+        a.sidebar-btn.js-keyboard-shortcuts-toggle(
+          title="{{#if isKeyboardShortcuts}}{{_ 'keyboard-shortcuts-enabled'}}{{else}}{{_ 'keyboard-shortcuts-disabled'}}{{/if}}")
+          i.fa(class="fa-solid fa-{{#if isKeyboardShortcuts}}check-square-o{{else}}ban{{/if}}")
       a.sidebar-xmark.js-close-sidebar &#10005;
     .sidebar-content.js-board-sidebar-content
       //a.hide-btn.js-hide-sidebar
@@ -25,11 +28,22 @@ template(name='homeSidebar')
   +membersWidget
   hr
   +labelsWidget
+  hr
   ul#cards.label-text-hidden
     a.flex.js-toggle-minicard-label-text(title="{{_ 'hide-minicard-label-text'}}")
       span {{_ 'hide-minicard-label-text'}}
       b &nbsp;
       .materialCheckBox(class="{{#if hiddenMinicardLabelText}}is-checked{{/if}}")
+  ul#cards.vertical-scrollbars-toggle
+    a.flex.js-vertical-scrollbars-toggle(title="{{_ 'enable-vertical-scrollbars'}}")
+      span {{_ 'enable-vertical-scrollbars'}}
+      b &nbsp;
+      .materialCheckBox(class="{{#if isVerticalScrollbars}}is-checked{{/if}}")
+  ul#cards.show-week-of-year-toggle
+    a.flex.js-show-week-of-year-toggle(title="{{_ 'show-week-of-year'}}")
+      span {{_ 'show-week-of-year'}}
+      b &nbsp;
+      .materialCheckBox(class="{{#if isShowWeekOfYear}}is-checked{{/if}}")
   hr
   unless currentUser.isNoComments
     h3.activity-title

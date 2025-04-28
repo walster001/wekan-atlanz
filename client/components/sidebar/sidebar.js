@@ -105,6 +105,16 @@ BlazeComponent.extendComponent({
     else return `${TAPi18n.__('sidebar-open')}`;
   },
 
+  isKeyboardShortcuts() {
+    const user = ReactiveCache.getCurrentUser();
+    return user && user.isKeyboardShortcuts();
+  },
+
+  isVerticalScrollbars() {
+    const user = ReactiveCache.getCurrentUser();
+    return user && user.isVerticalScrollbars();
+  },
+
   events() {
     return [
       {
@@ -126,6 +136,15 @@ BlazeComponent.extendComponent({
         'click .js-shortcuts'() {
           FlowRouter.go('shortcuts');
         },
+        'click .js-keyboard-shortcuts-toggle'() {
+          ReactiveCache.getCurrentUser().toggleKeyboardShortcuts();
+        },
+        'click .js-vertical-scrollbars-toggle'() {
+          ReactiveCache.getCurrentUser().toggleVerticalScrollbars();
+        },
+        'click .js-show-week-of-year-toggle'() {
+          ReactiveCache.getCurrentUser().toggleShowWeekOfYear();
+        },
         'click .js-close-sidebar'() {
           Sidebar.toggle()
         },
@@ -146,6 +165,14 @@ BlazeComponent.extendComponent({
     } else {
       return false;
     }
+  },
+  isVerticalScrollbars() {
+    const user = ReactiveCache.getCurrentUser();
+    return user && user.isVerticalScrollbars();
+  },
+  isShowWeekOfYear() {
+    const user = ReactiveCache.getCurrentUser();
+    return user && user.isShowWeekOfYear();
   },
   showActivities() {
     let ret = Utils.getCurrentBoard().showActivities ?? false;

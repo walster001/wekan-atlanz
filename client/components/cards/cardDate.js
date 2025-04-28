@@ -11,7 +11,7 @@ import { DatePicker } from '/client/lib/datepicker';
   }
 
   _storeDate(date) {
-    this.card.setReceived(date);
+    this.card.setReceived(moment(date).format('YYYY-MM-DD HH:mm'));
   }
 
   _deleteDate() {
@@ -37,7 +37,7 @@ import { DatePicker } from '/client/lib/datepicker';
   }
 
   _storeDate(date) {
-    this.card.setStart(date);
+    this.card.setStart(moment(date).format('YYYY-MM-DD HH:mm'));
   }
 
   _deleteDate() {
@@ -60,7 +60,7 @@ import { DatePicker } from '/client/lib/datepicker';
   }
 
   _storeDate(date) {
-    this.card.setDue(date);
+    this.card.setDue(moment(date).format('YYYY-MM-DD HH:mm'));
   }
 
   _deleteDate() {
@@ -83,7 +83,7 @@ import { DatePicker } from '/client/lib/datepicker';
   }
 
   _storeDate(date) {
-    this.card.setEnd(date);
+    this.card.setEnd(moment(date).format('YYYY-MM-DD HH:mm'));
   }
 
   _deleteDate() {
@@ -108,6 +108,10 @@ const CardDate = BlazeComponent.extendComponent({
 
   showWeek() {
     return this.date.get().week().toString();
+  },
+
+  showWeekOfYear() {
+    return ReactiveCache.getCurrentUser().isShowWeekOfYear();
   },
 
   showDate() {
@@ -283,6 +287,10 @@ class CardCustomFieldDate extends CardDate {
     return this.date.get().week().toString();
   }
 
+  showWeekOfYear() {
+    return ReactiveCache.getCurrentUser().isShowWeekOfYear();
+  }
+
   showDate() {
     // this will start working once mquandalle:moment
     // is updated to at least moment.js 2.10.5
@@ -314,19 +322,19 @@ CardCustomFieldDate.register('cardCustomFieldDate');
 
 (class extends CardStartDate {
   showDate() {
-    return this.date.get().format('L');
+    return this.date.get().format('YYYY-MM-DD HH:mm');
   }
 }.register('minicardStartDate'));
 
 (class extends CardDueDate {
   showDate() {
-    return this.date.get().format('L');
+    return this.date.get().format('YYYY-MM-DD HH:mm');
   }
 }.register('minicardDueDate'));
 
 (class extends CardEndDate {
   showDate() {
-    return this.date.get().format('L');
+    return this.date.get().format('YYYY-MM-DD HH:mm');
   }
 }.register('minicardEndDate'));
 

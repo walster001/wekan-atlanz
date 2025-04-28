@@ -2,10 +2,35 @@ import { Meteor } from 'meteor/meteor';
 import Users from '../users';
 
 function acceptedIpAddress(ipAddress) {
-  const trustedIpAddress = process.env.WEKAN_METRICS_ACCEPTED_IP_ADDRESS;
+  const trustedIpAddress = process.env.METRICS_ACCEPTED_IP_ADDRESS;
   return (
     trustedIpAddress !== undefined &&
     trustedIpAddress.split(',').includes(ipAddress)
+  );
+}
+
+function accessToken(req) {
+  const valid_token = process.env.METRICS_ACCESS_TOKEN;
+  let token;
+  if (req.headers && req.headers.authorization) {
+    var parts = req.headers.authorization.split(" ");
+
+    if (parts.length === 2) {
+      var scheme = parts[0];
+      var credentials = parts[1];
+
+      if (/^Bearer$/i.test(scheme)) {
+        token = credentials;
+      }
+    }
+  }
+  if (!token && req.query && req.query.access_token) {
+    token = req.query.access_token;
+  }
+  return (
+    token !== undefined &&
+    valid_token !== undefined &&
+    token == valid_token
   );
 }
 
@@ -48,8 +73,8 @@ Meteor.startup(() => {
       //   const ipAddress = req.socket.remoteAddress
       // }
 
-      // List of trusted ip adress will be found in environment variable "WEKAN_METRICS_ACCEPTED_IP_ADDRESS" (separeted with commas)
-      if (acceptedIpAddress(ipAddress)) {
+      // List of trusted ip adress will be found in environment variable "METRICS_ACCEPTED_IP_ADDRESS" (separeted with commas)
+      if (acceptedIpAddress(ipAddress) || (accessToken(req))) {
         let metricsRes = '';
         let resCount = 0;
         //connected users
@@ -170,12 +195,12 @@ Meteor.startup(() => {
 
         metricsRes +=
           '# Top 10 boards with most activities dated 30 days ago\n';
-        //Get top 10 table with most activities in current month       
+        //Get top 10 table with most activities in current month
         const boardTitleWithMostActivities = getBoardTitleWithMostActivities(
           dateWithXdaysAgo,
           xdays,
         );
-        
+
         const boardWithMostActivities = boardTitleWithMostActivities.map(
           (board) => board.lookup[0].title,
         );
@@ -185,7 +210,7 @@ Meteor.startup(() => {
             `wekan_top10BoardsWithMostActivities{n="${title}"} ${
               index + 1
             }` + '\n';
-        });       
+        });
 
         res.writeHead(200); // HTTP status
         res.end(metricsRes);

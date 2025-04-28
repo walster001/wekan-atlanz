@@ -2544,8 +2544,8 @@ THEME - Exodark
   background: #1b1b1b;
 }
 .board-color-exodark .materialCheckBox.is-checked {
-  border-bottom: 2px solid #222;
-  border-right: 2px solid #222;
+  border-bottom: 2px solid #dbdbdb!important;/*Fix contrast of checkbox*/
+  border-right: 2px solid #dbdbdb!important;
 }
 .board-color-exodark .is-multiselection-active .multi-selection-checkbox.is-checked + .minicard {
   background: #e9e9e9;
@@ -2993,6 +2993,10 @@ THEME - Clean Dark
   color: rgba(255, 255, 255, 0.85);
 }
 
+.board-color-cleandark .comments .comment .comment-desc .comment-text {
+  background: transparent;
+}
+
 .board-color-cleandark .activity-checklist,
 .board-color-cleandark .activity-comment {
   background: none !important;
@@ -3175,10 +3179,17 @@ THEME - Clean Dark
  margin-top: 8px;
 }
 
+.board-color-cleandark.background-box {
+  background-color:#23232B;
+} /*Fixes contrast issues with background box in theme selection list*/
 /* =============== 
 THEME - Clean Light
 =================*/
 /* Please note Clean Light theme elements also contain references to some cleandark theme elements so if unable to find code you're looking for under CleanDark it might be here. This should probably be cleaned up*/
+.board-color-cleanlight.background-box {
+  background-color:#e0e0e0;
+  color:#010101!important;
+} /*Fixes issues with text colour/background box being similar no contrast */
 
 .board-color-cleanlight {
   background: #E0E0E0;
@@ -3262,6 +3273,11 @@ THEME - Clean Light
   align-items: center;
   font-size: 16px;
   background: none;
+}
+
+.board-color-cleanlight .list .list-header div:has(.list-header-name),
+.board-color-cleandark .list .list-header div:has(.list-header-name) {
+  display: contents;
 }
 
 .board-color-cleanlight .list .list-header-name {
@@ -4129,11 +4145,6 @@ THEME - Clean Light
 
 .board-color-cleandark .card-details-left .viewer p {
   color: #FFFFFF;
-}
-
-.board-color-cleanlight .card-details-left .js-open-inlined-form,
-.board-color-cleandark .card-details-left .js-open-inlined-form {
-  float: right;
 }
 
 .board-color-cleanlight .new-comment .fa,
